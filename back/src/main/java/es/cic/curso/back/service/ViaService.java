@@ -4,21 +4,25 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.cic.curso.back.exception.ViaNotFoundException;
 import es.cic.curso.back.model.Via;
 import es.cic.curso.back.repository.ViaRepository;
 
 @Service
+@Transactional
 public class ViaService {
 
     @Autowired
     private ViaRepository viaRepository;
 
+    @Transactional(readOnly = true)
     public List<Via> getAllVias() {
         return viaRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Via getViaById(Long id) {
         return viaRepository.findById(id)
                 .orElseThrow(() -> new ViaNotFoundException("Vía no encontrada con id: " + id));
