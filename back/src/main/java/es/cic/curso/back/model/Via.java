@@ -1,5 +1,10 @@
 package es.cic.curso.back.model;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import es.cic.curso.back.enums.NivelCongestion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +26,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Via {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacío")
@@ -41,7 +46,13 @@ public class Via {
 
     @NotNull(message = "El nivel de congestión no puede estar vacío")
     @Enumerated(EnumType.STRING)
-    private NivelCongestion nivelCongestion;
+    private NivelCongestion congestion;
+
+    @CreationTimestamp
+    private LocalDateTime creacion;
+
+    @UpdateTimestamp
+    private LocalDateTime modificacion;
 
     @ManyToOne
     @NotNull(message = "El tipo de vía no puede ser nulo")
