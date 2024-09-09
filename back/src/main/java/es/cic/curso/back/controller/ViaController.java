@@ -3,6 +3,7 @@ package es.cic.curso.back.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import es.cic.curso.back.model.Via;
 import es.cic.curso.back.service.ViaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/vias")
+@Validated
 public class ViaController {
 
     @Autowired
@@ -34,13 +38,13 @@ public class ViaController {
     }
 
     @PostMapping
-    public Via createVia(@RequestBody Via via) {
+    public Via createVia(@Valid @RequestBody Via via) {
         Via nuevaVia = viaService.createVia(via);
         return nuevaVia;
     }
 
     @PutMapping("/{id}")
-    public Via updateVia(@PathVariable Long id, @RequestBody Via viaDetails) {
+    public Via updateVia(@PathVariable Long id, @Valid @RequestBody Via viaDetails) {
         Via viaActualizada = viaService.updateVia(id, viaDetails);
         return viaActualizada;
     }
