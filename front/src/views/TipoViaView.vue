@@ -1,23 +1,46 @@
 <template>
     <div class="container">
-      <h1>Gestión de Tipos de Vía</h1>
-      <form @submit.prevent="createTipoVia" class="form">
-        <input v-model="newTipoVia.tipo" placeholder="Tipo" required />
-        <input v-model="newTipoVia.codigo" placeholder="Código" required />
-        <input v-model="newTipoVia.abreviatura" placeholder="Abreviatura" />
-        <input v-model="newTipoVia.descripcion" placeholder="Descripción" />
-        <button type="submit">Crear Tipo de Vía</button>
-      </form>
-  
-      <ul class="tipo-via-list">
-        <li v-for="tipoVia in tipoVias" :key="tipoVia.id" class="tipo-via-item">
-          <span>{{ tipoVia.tipo }} - {{ tipoVia.codigo }}</span>
-          <div class="actions">
-            <button @click="editTipoVia(tipoVia)">Editar</button>
-            <button @click="confirmDelete(tipoVia.id)">Eliminar</button>
+      <h1>Tipos de Vía</h1>
+      <div class="content">
+        <div class="form-container">
+          <form @submit.prevent="createTipoVia" class="form">
+            <input v-model="newTipoVia.tipo" placeholder="Tipo" required />
+            <input v-model="newTipoVia.codigo" placeholder="Código" required />
+            <input v-model="newTipoVia.abreviatura" placeholder="Abreviatura" />
+            <input v-model="newTipoVia.descripcion" placeholder="Descripción" />
+            <button type="submit">Crear Tipo de Vía</button>
+          </form>
+        </div>
+        <div class="list-container">
+          <table class="tipo-via-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Código</th>
+                <th>Abreviatura</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="tipoVia in tipoVias" :key="tipoVia.id">
+                <td>{{ tipoVia.tipo }}</td>
+                <td>{{ tipoVia.codigo }}</td>
+                <td>{{ tipoVia.abreviatura }}</td>
+                <td>{{ tipoVia.descripcion }}</td>
+                <td>
+                  <button @click="editTipoVia(tipoVia)">Editar</button>
+                  <button @click="confirmDelete(tipoVia.id)">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Mensajes de éxito y error -->
+          <div v-if="message" :class="['message', messageType]">
+            {{ message }}
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
   
       <!-- Modal de edición -->
       <div v-if="editingTipoVia" class="modal">
@@ -46,11 +69,6 @@
             <button @click="cancelDelete">Cancelar</button>
           </div>
         </div>
-      </div>
-  
-      <!-- Mensajes de éxito y error -->
-      <div v-if="message" :class="['message', messageType]">
-        {{ message }}
       </div>
     </div>
   </template>
@@ -169,14 +187,17 @@
   </script>
   
   <style scoped>
+  html, body, #app {
+    height: 100%;
+    margin: 0;
+  }
+  
   .container {
-    max-width: 800px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     padding: 2rem;
     background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: 2rem; /* Añadir margen superior */
   }
   
   h1 {
@@ -184,11 +205,24 @@
     color: #333;
   }
   
+  .content {
+    display: flex;
+    flex: 1;
+    gap: 2rem;
+  }
+  
+  .form-container {
+    flex: 1;
+  }
+  
+  .list-container {
+    flex: 2;
+  }
+  
   .form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 2rem;
   }
   
   .form input,
@@ -213,44 +247,44 @@
     justify-content: space-between;
   }
   
-  .tipo-via-list {
-    list-style: none;
-    padding: 0;
-    max-height: 400px; /* Altura máxima para la lista */
-    overflow-y: auto; /* Hacer la lista desplazable */
+  .tipo-via-table {
+    width: 100%;
+    border-collapse: collapse;
   }
   
-  .tipo-via-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .tipo-via-table th, .tipo-via-table td {
     padding: 0.5rem;
-    border-bottom: 1px solid #ccc;
+    border: 1px solid #ccc;
+    text-align: left;
   }
   
-  .tipo-via-item .actions button {
-    margin-left: 0.5rem;
+  .tipo-via-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .tipo-via-table td button {
+    margin-right: 0.5rem;
     padding: 0.3rem 0.6rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
   }
   
-  .tipo-via-item .actions button:first-child {
+  .tipo-via-table td button:first-child {
     background-color: #ffc107;
     color: white;
   }
   
-  .tipo-via-item .actions button:first-child:hover {
+  .tipo-via-table td button:first-child:hover {
     background-color: #e0a800;
   }
   
-  .tipo-via-item .actions button:last-child {
+  .tipo-via-table td button:last-child {
     background-color: #dc3545;
     color: white;
   }
   
-  .tipo-via-item .actions button:last-child:hover {
+  .tipo-via-table td button:last-child:hover {
     background-color: #c82333;
   }
   
