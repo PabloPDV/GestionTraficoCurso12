@@ -9,6 +9,7 @@ INSERT INTO TipoVia (tipo, codigo, abreviatura, descripcion) VALUES
 ('Pasaje', 'PS', 'Ps.', 'Un pasaje peatonal'),
 ('Ruta', 'RT', 'Rt.', 'Una ruta nacional');
 
+
 -- Inserts adicionales para Via
 INSERT INTO Via (nombre, longitud, ancho, capacidad, estado, congestion, tipo_id) VALUES 
 ('Carretera Nacional 1', 50.0, 20.0, 5000, 'Abierta', 'BAJO', 4),

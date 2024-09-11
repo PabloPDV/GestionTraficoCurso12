@@ -22,7 +22,7 @@
             <label for="descripcion">Descripción</label>
             <textarea id="descripcion" v-model="newTipoVia.descripcion" ref="descripcionTextarea" required></textarea>
           </div>
-          <div class="form-actions fixed-actions">
+          <div class="form-actions">
             <button type="submit" class="btn-crear">Crear</button>
             <button type="button" @click="clearForm">Limpiar</button>
           </div>
@@ -47,8 +47,8 @@
                 <td class="abreviatura-column">{{ tipoVia.abreviatura }}</td>
                 <td class="descripcion-column">{{ tipoVia.descripcion }}</td>
                 <td class="actions-column">
-                  <button @click="editTipoVia(tipoVia)">Editar</button>
-                  <button @click="confirmDelete(tipoVia)">Eliminar</button>
+                  <button class="btn-edit" @click="editTipoVia(tipoVia)">Editar</button>
+                  <button class="btn-delete" @click="confirmDelete(tipoVia)">Eliminar</button>
                 </td>
               </tr>
             </tbody>
@@ -62,8 +62,8 @@
     </div>
 
     <!-- Modal de edición -->
-    <div v-if="editingTipoVia" class="modal">
-      <div class="modal-content modal-left">
+    <div v-if="editingTipoVia" class="modal-edit">
+      <div class="modal-content-edit modal-left">
         <h2>Editar Tipo de Vía</h2>
         <form @submit.prevent="updateTipoVia" class="form">
           <div class="form-row">
@@ -162,6 +162,7 @@ const clearForm = () => {
   if (descripcionTextarea.value) {
     descripcionTextarea.value.style.height = 'auto'; // Restablecer el tamaño del textarea
   }
+  fetchTipoVias();
 };
 
 const editTipoVia = (tipoVia) => {
@@ -209,10 +210,16 @@ const cancelDelete = () => {
   showDeleteModal.value = false;
   deleteTipoViaId.value = null;
   deleteTipoViaName.value = '';
+  fetchTipoVias();
 };
 
 const cancelEdit = () => {
   editingTipoVia.value = null;
+  fetchTipoVias();
+};
+
+const reloadPage = () => {
+  location.reload();
 };
 
 const showMessage = (msg, type) => {
@@ -264,8 +271,6 @@ h1 {
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
-  height: 100%;
-  padding-bottom: 4rem; /* Añade espacio para los botones fijos */
 }
 
 .list-container {
@@ -277,7 +282,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  height: 100%;
 }
 
 .form-row {
@@ -312,7 +316,7 @@ h1 {
 
 .form textarea {
   resize: vertical;
-  max-height: 97px;
+  max-height: 150px; /* Limita el crecimiento del textarea */
 }
 
 .form button {
@@ -331,17 +335,6 @@ h1 {
   margin-top: 1rem; /* Asegura que los botones estén debajo de los campos */
 }
 
-.fixed-actions {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: transparent; /* Cambia el fondo a transparente */
-  padding: 1rem;
-  box-shadow: none; /* Elimina la sombra */
-  margin-top: 1rem; /* Añade margen superior */
-}
-
 .btn-crear {
   background-color: #28a745;
 }
@@ -354,57 +347,79 @@ h1 {
   max-height: 400px;
   overflow-y: auto;
   position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tipo-via-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .tipo-via-table th, .tipo-via-table td {
-  padding: 0.2rem;
-  border: 1px solid #ccc;
+  padding: 0.75rem;
   text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 .tipo-via-table th {
-  background-color: #b6b5b5 !important;
+  background-color: #f4f4f4;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
   position: sticky;
   top: 0;
   z-index: 1;
-  border-bottom: 2px solid #ccc !important;
 }
 
-.actions-column {
-  white-space: nowrap;
-  width: 1%;
+.tipo-via-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.tipo-via-table td button {
-  margin-right: 0.2rem;
-  padding: 0.2rem 0.4rem;
+.tipo-via-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.tipo-via-table .actions-column {
+  text-align: center;
+}
+
+.tipo-via-table button {
+  padding: 0.3rem 0.6rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 0.5rem; /* Añade separación entre los botones */
 }
 
-.tipo-via-table td button:first-child {
-  background-color: #ffc107;
+.tipo-via-table button:last-child {
+  margin-right: 0; /* Elimina el margen derecho del último botón */
+}
+
+.tipo-via-table button:hover {
+  background-color: #ddd;
+}
+
+.tipo-via-table .btn-edit {
+  background-color: #4caf50;
   color: white;
 }
 
-.tipo-via-table td button:first-child:hover {
-  background-color: #e0a800;
+.tipo-via-table .btn-edit:hover {
+  background-color: #45a049;
 }
 
-.tipo-via-table td button:last-child {
-  background-color: #dc3545;
+.tipo-via-table .btn-delete {
+  background-color: #f44336;
   color: white;
 }
 
-.tipo-via-table td button:last-child:hover {
-  background-color: #c82333;
+.tipo-via-table .btn-delete:hover {
+  background-color: #e53935;
 }
 
 .modal {
@@ -417,10 +432,41 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Asegura que el modal esté por encima del contenido */
+  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+}
+
+.modal-edit {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.modal-content-edit {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-left: 2%;
+  margin-bottom: 10%;
+}
+
+.modal-content-confirmacion {
   background-color: white;
   padding: 2rem;
   border-radius: 8px;

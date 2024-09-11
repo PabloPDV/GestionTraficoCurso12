@@ -30,15 +30,15 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="longitud">Longitud</label>
+              <label for="longitud">Longitud(m)</label>
               <input id="longitud" v-model="newVia.longitud" type="number" required />
             </div>
             <div class="form-group">
-              <label for="ancho">Ancho</label>
+              <label for="ancho">Ancho(m)</label>
               <input id="ancho" v-model="newVia.ancho" type="number" required />
             </div>
             <div class="form-group">
-              <label for="capacidad">Capacidad</label>
+              <label for="capacidad">Capacidad(veh/h)</label>
               <input id="capacidad" v-model="newVia.capacidad" type="number" required />
             </div>
           </div>
@@ -77,8 +77,8 @@
                 <td>{{ via.creacion }}</td>
                 <td>{{ via.modificacion }}</td>
                 <td class="actions-column">
-                  <button @click="editVia(via)">Editar</button>
-                  <button @click="confirmDelete(via)">Eliminar</button>
+                  <button class="btn-edit" @click="editVia(via)">Editar</button>
+                  <button class="btn-delete" @click="confirmDelete(via)">Eliminar</button>
                 </td>
               </tr>
             </tbody>
@@ -92,8 +92,8 @@
     </div>
 
     <!-- Modal de edición -->
-    <div v-if="editingVia" class="modal">
-      <div class="modal-content modal-left">
+    <div v-if="editingVia" class="modal-edit">
+      <div class="modal-content-edit modal-left">
         <h2>Editar Vía</h2>
         <form @submit.prevent="updateVia" class="form">
           <div class="form-row">
@@ -214,6 +214,7 @@ const clearForm = () => {
     ancho: null,
     capacidad: null
   };
+  fetchVias();
 };
 
 const editVia = (via) => {
@@ -261,10 +262,12 @@ const cancelDelete = () => {
   showDeleteModal.value = false;
   deleteViaId.value = null;
   deleteViaName.value = '';
+  fetchVias();
 };
 
 const cancelEdit = () => {
   editingVia.value = null;
+  fetchVias();
 };
 
 const showMessage = (msg, type) => {
@@ -343,6 +346,7 @@ h1 {
 .form-group label {
   margin-bottom: 0.5rem;
   font-weight: bold;
+  font-size: 0.9rem; /* Reduce el tamaño de letra de las etiquetas */
 }
 
 .form input,
@@ -352,7 +356,7 @@ h1 {
   padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 100%;
+  width: 95%; /* Acorta levemente los campos del formulario */
 }
 
 .form input[type="number"] {
@@ -392,61 +396,79 @@ h1 {
   max-height: 400px;
   overflow-y: auto;
   position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .via-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .via-table th, .via-table td {
-  padding: 0.2rem;
-  border: 1px solid #ccc;
+  padding: 0.75rem;
   text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 .via-table th {
-  background-color: #b6b5b5 !important;
+  background-color: #f4f4f4;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
   position: sticky;
   top: 0;
   z-index: 1;
-  border-bottom: 2px solid #ccc !important;
 }
 
-.tipo-id-column {
-  width: 80px;
+.via-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.actions-column {
-  white-space: nowrap;
-  width: 1%;
+.via-table tr:hover {
+  background-color: #f1f1f1;
 }
 
-.via-table td button {
-  margin-right: 0.2rem;
-  padding: 0.2rem 0.4rem;
+.via-table .actions-column {
+  text-align: center;
+}
+
+.via-table button {
+  padding: 0.3rem 0.6rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 0.5rem; /* Añade separación entre los botones */
 }
 
-.via-table td button:first-child {
-  background-color: #ffc107;
+.via-table button:last-child {
+  margin-right: 0; /* Elimina el margen derecho del último botón */
+}
+
+.via-table button:hover {
+  background-color: #ddd;
+}
+
+.via-table .btn-edit {
+  background-color: #4caf50;
   color: white;
 }
 
-.via-table td button:first-child:hover {
-  background-color: #e0a800;
+.via-table .btn-edit:hover {
+  background-color: #45a049;
 }
 
-.via-table td button:last-child {
-  background-color: #dc3545;
+.via-table .btn-delete {
+  background-color: #f44336;
   color: white;
 }
 
-.via-table td button:last-child:hover {
-  background-color: #c82333;
+.via-table .btn-delete:hover {
+  background-color: #e53935;
 }
 
 .modal {
@@ -459,6 +481,20 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+}
+
+.modal-edit {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-content {
@@ -467,6 +503,16 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+.modal-content-edit {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-left: 2%;
+  margin-bottom: 10%;
 }
 
 .modal-content-confirmacion {
@@ -542,7 +588,7 @@ h1 {
   .form select,
   .form textarea,
   .form button {
-    width: 100%;
+    width: 95%; /* Acorta levemente los campos del formulario */
   }
 }
 
