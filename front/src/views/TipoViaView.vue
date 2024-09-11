@@ -4,40 +4,56 @@
     <div class="content">
       <div class="form-container">
         <form @submit.prevent="createTipoVia" class="form">
-          <input v-model="newTipoVia.tipo" placeholder="Tipo" required />
-          <input v-model="newTipoVia.codigo" placeholder="Código" required />
-          <input v-model="newTipoVia.abreviatura" placeholder="Abreviatura" />
-          <textarea ref="descripcionTextarea" v-model="newTipoVia.descripcion" placeholder="Descripción"></textarea>
-          <div class="form-actions">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tipo">Tipo</label>
+              <input id="tipo" v-model="newTipoVia.tipo" required />
+            </div>
+            <div class="form-group">
+              <label for="codigo">Código</label>
+              <input id="codigo" v-model="newTipoVia.codigo" required />
+            </div>
+            <div class="form-group">
+              <label for="abreviatura">Abreviatura</label>
+              <input id="abreviatura" v-model="newTipoVia.abreviatura" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" v-model="newTipoVia.descripcion" ref="descripcionTextarea" required></textarea>
+          </div>
+          <div class="form-actions fixed-actions">
             <button type="submit" class="btn-crear">Crear</button>
             <button type="button" @click="clearForm">Limpiar</button>
           </div>
         </form>
       </div>
       <div class="list-container">
-        <table class="tipo-via-table">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Código</th>
-              <th class="abreviatura-column">Abreviatura</th>
-              <th class="descripcion-column">Descripción</th>
-              <th class="actions-column">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="tipoVia in tipoVias" :key="tipoVia.id">
-              <td>{{ tipoVia.tipo }}</td>
-              <td>{{ tipoVia.codigo }}</td>
-              <td class="abreviatura-column">{{ tipoVia.abreviatura }}</td>
-              <td class="descripcion-column">{{ tipoVia.descripcion }}</td>
-              <td class="actions-column">
-                <button @click="editTipoVia(tipoVia)">Editar</button>
-                <button @click="confirmDelete(tipoVia.id)">Eliminar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="tipo-via-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Código</th>
+                <th class="abreviatura-column">Abreviatura</th>
+                <th class="descripcion-column">Descripción</th>
+                <th class="actions-column">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="tipoVia in tipoVias" :key="tipoVia.id">
+                <td>{{ tipoVia.tipo }}</td>
+                <td>{{ tipoVia.codigo }}</td>
+                <td class="abreviatura-column">{{ tipoVia.abreviatura }}</td>
+                <td class="descripcion-column">{{ tipoVia.descripcion }}</td>
+                <td class="actions-column">
+                  <button @click="editTipoVia(tipoVia)">Editar</button>
+                  <button @click="confirmDelete(tipoVia)">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <!-- Mensajes de éxito y error -->
         <div v-if="message" :class="['message', messageType]">
           {{ message }}
@@ -50,10 +66,24 @@
       <div class="modal-content modal-left">
         <h2>Editar Tipo de Vía</h2>
         <form @submit.prevent="updateTipoVia" class="form">
-          <input v-model="editingTipoVia.tipo" placeholder="Tipo" required />
-          <input v-model="editingTipoVia.codigo" placeholder="Código" required />
-          <input v-model="editingTipoVia.abreviatura" placeholder="Abreviatura" />
-          <textarea v-model="editingTipoVia.descripcion" placeholder="Descripción"></textarea>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-tipo">Tipo</label>
+              <input id="edit-tipo" v-model="editingTipoVia.tipo" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-codigo">Código</label>
+              <input id="edit-codigo" v-model="editingTipoVia.codigo" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-abreviatura">Abreviatura</label>
+              <input id="edit-abreviatura" v-model="editingTipoVia.abreviatura" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-descripcion">Descripción</label>
+            <textarea id="edit-descripcion" v-model="editingTipoVia.descripcion" required></textarea>
+          </div>
           <div class="form-actions">
             <button type="submit">Actualizar</button>
             <button type="button" @click="cancelEdit">Cancelar</button>
@@ -66,7 +96,7 @@
     <div v-if="showDeleteModal" class="modal">
       <div class="modal-content">
         <h3>Confirmar Eliminación</h3>
-        <p>¿Estás seguro de que deseas eliminar este tipo de vía?</p>
+        <p>¿Estás seguro de que deseas eliminar el tipo de vía "{{ deleteTipoViaName }}"?</p>
         <div class="modal-actions">
           <button @click="deleteTipoVia(deleteTipoViaId)">Sí, eliminar</button>
           <button @click="cancelDelete">Cancelar</button>
@@ -90,6 +120,7 @@ const newTipoVia = ref({
 const editingTipoVia = ref(null);
 const showDeleteModal = ref(false);
 const deleteTipoViaId = ref(null);
+const deleteTipoViaName = ref('');
 const message = ref('');
 const messageType = ref('');
 const descripcionTextarea = ref(null);
@@ -154,8 +185,9 @@ const updateTipoVia = async () => {
   }
 };
 
-const confirmDelete = (id) => {
-  deleteTipoViaId.value = id;
+const confirmDelete = (tipoVia) => {
+  deleteTipoViaId.value = tipoVia.id;
+  deleteTipoViaName.value = tipoVia.tipo;
   showDeleteModal.value = true;
 };
 
@@ -165,6 +197,7 @@ const deleteTipoVia = async (id) => {
     fetchTipoVias();
     showDeleteModal.value = false;
     deleteTipoViaId.value = null;
+    deleteTipoViaName.value = '';
     showMessage('Tipo de vía eliminado exitosamente', 'success');
   } catch (error) {
     console.error('Error deleting tipoVia:', error);
@@ -175,6 +208,7 @@ const deleteTipoVia = async (id) => {
 const cancelDelete = () => {
   showDeleteModal.value = false;
   deleteTipoViaId.value = null;
+  deleteTipoViaName.value = '';
 };
 
 const cancelEdit = () => {
@@ -191,7 +225,7 @@ const showMessage = (msg, type) => {
 };
 
 const validateTipoVia = (tipoVia) => {
-  return tipoVia.tipo && tipoVia.codigo;
+  return tipoVia.tipo && tipoVia.codigo && tipoVia.abreviatura && tipoVia.descripcion;
 };
 
 onMounted(fetchTipoVias);
@@ -204,7 +238,7 @@ html, body, #app {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 2rem;
   background-color: #f9f9f9;
@@ -220,38 +254,65 @@ h1 {
 
 .content {
   display: flex;
-  flex-direction: column;
-  gap: 1rem; /* Reducir el gap para acercar las secciones */
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .form-container {
   flex: 1;
-  margin-right: 1rem; /* Reducir el margen derecho */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  height: 100%;
+  padding-bottom: 4rem; /* Añade espacio para los botones fijos */
 }
 
 .list-container {
   flex: 2;
-  margin-left: 1rem; /* Reducir el margen izquierdo */
+  margin-left: 1rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  height: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
 .form input,
+.form select,
 .form textarea,
 .form button {
-  padding: 0.3rem; /* Reducir el padding para hacer los campos más estrechos */
+  padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 80%; /* Ajustar el ancho de los campos */
-  margin: 0 auto; /* Centrar los campos */
+  width: 100%;
+}
+
+.form input[type="number"] {
+  text-align: right;
 }
 
 .form textarea {
-  resize: vertical; /* Permitir el redimensionamiento vertical del textarea */
+  resize: vertical;
+  max-height: 97px;
 }
 
 .form button {
@@ -267,39 +328,52 @@ h1 {
 .form-actions {
   display: flex;
   justify-content: space-between;
+  margin-top: 1rem; /* Asegura que los botones estén debajo de los campos */
+}
+
+.fixed-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: transparent; /* Cambia el fondo a transparente */
+  padding: 1rem;
+  box-shadow: none; /* Elimina la sombra */
+  margin-top: 1rem; /* Añade margen superior */
 }
 
 .btn-crear {
-  background-color: #28a745; /* Color verde */
+  background-color: #28a745;
 }
 
 .btn-crear:hover {
-  background-color: #218838; /* Color verde oscuro */
+  background-color: #218838;
+}
+
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  position: relative;
 }
 
 .tipo-via-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem; /* Reducir el tamaño de fuente para hacer la tabla más pequeña */
+  font-size: 0.9rem;
 }
 
 .tipo-via-table th, .tipo-via-table td {
-  padding: 0.2rem; /* Reducir el padding para hacer la tabla más compacta */
+  padding: 0.2rem;
   border: 1px solid #ccc;
   text-align: left;
 }
 
 .tipo-via-table th {
-  background-color: #f2f2f2;
-}
-
-.abreviatura-column {
-  width: 80px; /* Reducir el ancho de la columna Abreviatura */
-}
-
-.descripcion-column {
-  width: 300px; /* Aumentar el ancho de la columna Descripción */
-  word-wrap: break-word; /* Permitir que el texto se muestre en varias líneas */
+  background-color: #b6b5b5 !important;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 2px solid #ccc !important;
 }
 
 .actions-column {
@@ -308,8 +382,8 @@ h1 {
 }
 
 .tipo-via-table td button {
-  margin-right: 0.2rem; /* Reducir el margen entre botones */
-  padding: 0.2rem 0.4rem; /* Reducir el padding de los botones */
+  margin-right: 0.2rem;
+  padding: 0.2rem 0.4rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -333,7 +407,6 @@ h1 {
   background-color: #c82333;
 }
 
-/* Estilos para el modal */
 .modal {
   position: fixed;
   top: 0;
@@ -342,8 +415,9 @@ h1 {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: flex-start; /* Alinear el modal a la izquierda */
+  justify-content: center;
   align-items: center;
+  z-index: 1000; /* Asegura que el modal esté por encima del contenido */
 }
 
 .modal-content {
@@ -352,8 +426,6 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
-  margin-left: 25rem; 
-  margin-bottom: 15rem;
 }
 
 .modal-actions {
@@ -387,7 +459,6 @@ h1 {
   background-color: #5a6268;
 }
 
-/* Estilos para los mensajes */
 .message {
   padding: 1rem;
   margin-top: 1rem;
@@ -405,7 +476,6 @@ h1 {
   color: #721c24;
 }
 
-/* Media queries para hacer la vista responsive */
 @media (min-width: 768px) {
   .content {
     flex-direction: row;
@@ -420,6 +490,7 @@ h1 {
   }
 
   .form input,
+  .form select,
   .form textarea,
   .form button {
     width: 100%;
@@ -432,6 +503,7 @@ h1 {
   }
 
   .form input,
+  .form select,
   .form textarea,
   .form button {
     width: 100%;
