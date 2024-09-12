@@ -4,40 +4,40 @@
     <div class="content">
       <div class="form-container">
         <form @submit.prevent="createVia" class="form">
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" v-model="newVia.nombre" required />
+          </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="nombre">Nombre</label>
-              <input id="nombre" v-model="newVia.nombre" required />
+              <label for="estado">Estado</label>
+              <input id="estado" v-model="newVia.estado" required />
             </div>
             <div class="form-group">
               <label for="tipo">Tipo</label>
               <select id="tipo" v-model="newVia.tipo.id" required>
-                <option value="" disabled>Seleccione el Tipo</option>
+                <option value="" disabled selected>Seleccione el Tipo</option>
                 <option v-for="tipo in tipos" :key="tipo.id" :value="tipo.id">{{ tipo.codigo }}</option>
               </select>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="estado">Estado</label>
-            <input id="estado" v-model="newVia.estado" required />
-          </div>
-          <div class="form-group">
-            <label for="congestion">Nivel de Congestión</label>
-            <select id="congestion" v-model="newVia.congestion" required>
-              <option value="" disabled>Selecciona el nivel de congestión</option>
-              <option value="NINGUNO">Ninguno</option>
-              <option value="BAJO">Bajo</option>
-              <option value="MEDIO">Medio</option>
-              <option value="ALTO">Alto</option>
-            </select>
+            <div class="form-group">
+              <label for="congestion">Nivel de Congestión</label>
+              <select id="congestion" v-model="newVia.congestion" required>
+                <option value="" disabled>Selecciona el nivel</option>
+                <option value="NINGUNO">Ninguno</option>
+                <option value="BAJO">Bajo</option>
+                <option value="MEDIO">Medio</option>
+                <option value="ALTO">Alto</option>
+              </select>
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="longitud">Longitud (m.)</label>
+              <label for="longitud">Longitud (m)</label>
               <input id="longitud" v-model="newVia.longitud" type="number" step="0.01" required />
             </div>
             <div class="form-group">
-              <label for="ancho">Ancho (m.)</label>
+              <label for="ancho">Ancho (m)</label>
               <input id="ancho" v-model="newVia.ancho" type="number" step="0.01" required />
             </div>
             <div class="form-group">
@@ -60,9 +60,9 @@
                 <th>Estado</th>
                 <th>Congestión</th>
                 <th>Tipo</th>
-                <th>Longitud (m.)</th>
-                <th>Ancho (m.)</th>
-                <th>Capacidad (veh/h)</th>
+                <th>Longitud</th>
+                <th>Ancho</th>
+                <th>Capacidad</th>
                 <th class="actions-column">Acciones</th>
               </tr>
             </thead>
@@ -71,8 +71,8 @@
                 <td>{{ via.nombre }}</td>
                 <td>{{ via.estado }}</td>
                 <td>{{ via.congestion }}</td>
-                <td>{{ getTipoCodigo(via.tipo.id) }}</td>
-                <td class="number-cell">{{ via.longitud }} </td>
+                <td class="number-cell">{{ getTipoCodigo(via.tipo.id) }}</td>
+                <td class="number-cell">{{ via.longitud }}</td>
                 <td class="number-cell">{{ via.ancho }}</td>
                 <td class="number-cell">{{ via.capacidad }}</td>
                 <td class="actions-column">
@@ -95,10 +95,14 @@
       <div class="modal-content-edit modal-left">
         <h2>Editar Vía</h2>
         <form @submit.prevent="updateVia" class="form">
+          <div class="form-group">
+            <label for="edit-nombre">Nombre</label>
+            <input id="edit-nombre" v-model="editingVia.nombre" required />
+          </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="edit-nombre">Nombre</label>
-              <input id="edit-nombre" v-model="editingVia.nombre" required />
+              <label for="edit-estado">Estado</label>
+              <input id="edit-estado" v-model="editingVia.estado" required />
             </div>
             <div class="form-group">
               <label for="edit-tipo">Tipo</label>
@@ -107,20 +111,16 @@
                 <option v-for="tipo in tipos" :key="tipo.id" :value="tipo.id">{{ tipo.codigo }}</option>
               </select>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="edit-estado">Estado</label>
-            <input id="edit-estado" v-model="editingVia.estado" required />
-          </div>
-          <div class="form-group">
-            <label for="edit-congestion">Nivel de Congestión</label>
-            <select id="edit-congestion" v-model="editingVia.congestion" required>
-              <option value="" disabled>Selecciona el nivel de congestión</option>
-              <option value="NINGUNO">Ninguno</option>
-              <option value="BAJO">Bajo</option>
-              <option value="MEDIO">Medio</option>
-              <option value="ALTO">Alto</option>
-            </select>
+            <div class="form-group">
+              <label for="edit-congestion">Nivel de Congestión</label>
+              <select id="edit-congestion" v-model="editingVia.congestion" required>
+                <option value="" disabled>Selecciona el nivel</option>
+                <option value="NINGUNO">Ninguno</option>
+                <option value="BAJO">Bajo</option>
+                <option value="MEDIO">Medio</option>
+                <option value="ALTO">Alto</option>
+              </select>
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -167,7 +167,7 @@ const vias = ref([]);
 const tipos = ref([]);
 const newVia = ref({
   nombre: '',
-  tipo: { id: null },
+  tipo: { id: '' },
   estado: '',
   congestion: '',
   longitud: null,
@@ -222,7 +222,7 @@ const createVia = async () => {
 const clearForm = () => {
   newVia.value = {
     nombre: '',
-    tipo: { id: null },
+    tipo: { id: '' },
     estado: '',
     congestion: '',
     longitud: null,
@@ -428,7 +428,7 @@ h1 {
 }
 
 .btn-crear {
-  background-color: #28a745;
+  background-color: #72997b;
 }
 
 .btn-crear:hover {

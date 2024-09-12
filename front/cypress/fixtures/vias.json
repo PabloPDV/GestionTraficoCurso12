@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "nombre": "Via 1",
+        "estado": "Bueno",
+        "congestion": "BAJO",
+        "tipo": {
+            "id": 1
+        },
+        "longitud": 100,
+        "ancho": 10,
+        "capacidad": 1000
+    },
+    {
+        "id": 2,
+        "nombre": "Via 2",
+        "estado": "Malo",
+        "congestion": "ALTO",
+        "tipo": {
+            "id": 2
+        },
+        "longitud": 200,
+        "ancho": 20,
+        "capacidad": 2000
+    }
+]

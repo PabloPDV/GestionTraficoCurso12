@@ -55,23 +55,23 @@ nav {
   gap: 1rem;
 }
 
-nav a, .router-link-active {
+nav a,
+.router-link-active {
   color: white;
   text-decoration: none;
   font-weight: bold;
-  text-align: center; /* Centrar el texto */
-  font-size: 1.2rem; /* Aumentar el tamaño de la letra */
+  text-align: center;
+  font-size: 1.2rem;
 }
 
 nav a:hover {
   text-decoration: underline;
 }
 
-/* Estilo para el enlace activo */
 .router-link-active {
-  font-weight: bolder; /* Poner en negrita */
-  font-size: 1.4rem; /* Aumentar ligeramente el tamaño de la letra */
-  text-align: center; /* Asegurar que el texto esté centrado */
-  text-decoration: underline; /* Añadir subrayado */
+  font-weight: bolder;
+  font-size: 1.4rem;
+  text-align: center;
+  text-decoration: underline;
 }
 </style>
