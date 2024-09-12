@@ -24,7 +24,7 @@
           </div>
           <div class="form-actions">
             <button type="submit" class="btn-crear">Crear</button>
-            <button type="button" @click="clearForm">Limpiar</button>
+            <button type="button" class="btn-limpiar" @click="clearForm">Limpiar</button>
           </div>
         </form>
       </div>
@@ -325,13 +325,8 @@ h1 {
 }
 
 .form button {
-  background-color: #007bff;
   color: white;
   cursor: pointer;
-}
-
-.form button:hover {
-  background-color: #0056b3;
 }
 
 .form-actions {
@@ -341,11 +336,20 @@ h1 {
 }
 
 .btn-crear {
-  background-color: #28a745;
+  background-color: #4caf50;
+}
+
+
+.btn-limpiar {
+  background-color: #007bff;
 }
 
 .btn-crear:hover {
   background-color: #218838;
+}
+
+.btn-limpiar:hover {
+  background-color: #0157b3;
 }
 
 .table-container {
@@ -411,12 +415,12 @@ h1 {
 }
 
 .tipo-via-table .btn-edit {
-  background-color: #4caf50;
+  background-color: #FFC107;
   color: white;
 }
 
 .tipo-via-table .btn-edit:hover {
-  background-color: #45a049;
+  background-color: #E0A800;
 }
 
 .tipo-via-table .btn-delete {
