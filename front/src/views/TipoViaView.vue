@@ -42,11 +42,11 @@
             </thead>
             <tbody>
               <tr v-for="tipoVia in tipoVias" :key="tipoVia.id">
-                <td>{{ tipoVia.tipo }}</td>
-                <td>{{ tipoVia.codigo }}</td>
-                <td class="abreviatura-column">{{ tipoVia.abreviatura }}</td>
-                <td class="descripcion-column">{{ tipoVia.descripcion }}</td>
-                <td class="actions-column">
+                <td data-label="Tipo">{{ tipoVia.tipo }}</td>
+                <td data-label="Código">{{ tipoVia.codigo }}</td>
+                <td data-label="Abreviatura" class="abreviatura-column">{{ tipoVia.abreviatura }}</td>
+                <td data-label="Descripción" class="descripcion-column">{{ tipoVia.descripcion }}</td>
+                <td data-label="Acciones" class="actions-column">
                   <button class="btn-edit" @click="editTipoVia(tipoVia)">Editar</button>
                   <button class="btn-delete" @click="confirmDelete(tipoVia)">Eliminar</button>
                 </td>
@@ -56,7 +56,7 @@
         </div>
         <!-- Mensajes de éxito y error -->
         <div v-if="message" :class="['message', messageType]">
-          {{ message }}
+          {{ message }}: {{ messageItemName }}
         </div>
       </div>
     </div>
@@ -123,6 +123,7 @@ const deleteTipoViaId = ref(null);
 const deleteTipoViaName = ref('');
 const message = ref('');
 const messageType = ref('');
+const messageItemName = ref('');
 const descripcionTextarea = ref(null);
 
 const fetchTipoVias = async () => {
@@ -144,11 +145,11 @@ const createTipoVia = async () => {
   try {
     await axios.post('/api/tipovia', newTipoVia.value);
     fetchTipoVias();
+    showMessage('Tipo de vía creado exitosamente', 'success', newTipoVia.value.tipo);
     clearForm();
-    showMessage('Tipo de vía creado exitosamente', 'success');
   } catch (error) {
     console.error('Error creating tipoVia:', error);
-    showMessage('Error al crear el tipo de vía', 'error');
+    showMessage('Error al crear el tipo de vía', 'error', newTipoVia.value.tipo);
   }
 };
 
@@ -178,11 +179,11 @@ const updateTipoVia = async () => {
   try {
     await axios.put(`/api/tipovia/${editingTipoVia.value.id}`, editingTipoVia.value);
     fetchTipoVias();
+    showMessage('Tipo de vía actualizado exitosamente', 'success', editingTipoVia.value.tipo);
     editingTipoVia.value = null;
-    showMessage('Tipo de vía actualizado exitosamente', 'success');
   } catch (error) {
     console.error('Error updating tipoVia:', error);
-    showMessage('Error al actualizar el tipo de vía', 'error');
+    showMessage('Error al actualizar el tipo de vía', 'error', editingTipoVia.value.tipo);
   }
 };
 
@@ -196,13 +197,18 @@ const deleteTipoVia = async (id) => {
   try {
     await axios.delete(`/api/tipovia/${id}`);
     fetchTipoVias();
+    showMessage('Tipo de vía eliminado exitosamente', 'success', deleteTipoViaName.value);
+  } catch (error) {
+    console.error('Error deleting tipoVia:', error);
+    if (error.response && error.response.status === 500 && error.response.data.message.includes('Referential integrity constraint violation')) {
+      showMessage(`No se puede eliminar el tipo de vía "${deleteTipoViaName.value}" porque está asignado a una vía`, 'error', 'deberás eliminar las vías asociadas primero', 4000);
+    } else {
+      showMessage('Error al eliminar el tipo de vía', 'error', deleteTipoViaName.value);
+    }
+  } finally {
     showDeleteModal.value = false;
     deleteTipoViaId.value = null;
     deleteTipoViaName.value = '';
-    showMessage('Tipo de vía eliminado exitosamente', 'success');
-  } catch (error) {
-    console.error('Error deleting tipoVia:', error);
-    showMessage('Error al eliminar el tipo de vía', 'error');
   }
 };
 
@@ -218,17 +224,15 @@ const cancelEdit = () => {
   fetchTipoVias();
 };
 
-const reloadPage = () => {
-  location.reload();
-};
-
-const showMessage = (msg, type) => {
+const showMessage = (msg, type, itemName = '', duration = 3000) => {
   message.value = msg;
   messageType.value = type;
+  messageItemName.value = itemName;
   setTimeout(() => {
     message.value = '';
     messageType.value = '';
-  }, 3000);
+    messageItemName.value = '';
+  }, duration);
 };
 
 const validateTipoVia = (tipoVia) => {
@@ -261,7 +265,7 @@ h1 {
 
 .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -286,6 +290,7 @@ h1 {
 
 .form-row {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -385,6 +390,7 @@ h1 {
 
 .tipo-via-table .actions-column {
   text-align: center;
+  white-space: nowrap; /* Evitar salto de línea */
 }
 
 .tipo-via-table button {
@@ -463,7 +469,7 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   margin-left: 2%;
-  margin-bottom: 10%;
+  margin-bottom: 21%;
 }
 
 .modal-content-confirmacion {
@@ -535,11 +541,15 @@ h1 {
     margin-left: 1rem;
   }
 
+  .form-row {
+    flex-direction: row;
+  }
+
   .form input,
   .form select,
   .form textarea,
   .form button {
-    width: 100%;
+    width: 95%; /* Acorta levemente los campos del formulario */
   }
 }
 
@@ -562,6 +572,41 @@ h1 {
 
   .content {
     gap: 0.5rem;
+  }
+
+  .table-container {
+    max-height: none; /* Permitir que la tabla crezca en altura */
+    overflow-x: auto; /* Habilitar el desplazamiento horizontal */
+  }
+
+  .tipo-via-table {
+    display: block; /* Hacer que la tabla sea un bloque */
+    width: 100%; /* Asegurar que la tabla ocupe todo el ancho */
+    overflow-x: auto; /* Habilitar el desplazamiento horizontal */
+  }
+
+  .tipo-via-table th, .tipo-via-table td {
+    display: block; /* Hacer que las celdas sean bloques */
+    width: 100%; /* Asegurar que las celdas ocupen todo el ancho */
+    box-sizing: border-box; /* Incluir el padding y el borde en el ancho */
+  }
+
+  .tipo-via-table th {
+    position: relative; /* Permitir que las celdas se posicionen correctamente */
+    top: auto; /* Restablecer la posición superior */
+    z-index: auto; /* Restablecer el índice z */
+  }
+
+  .tipo-via-table td::before {
+    content: attr(data-label); /* Usar el atributo data-label para mostrar la cabecera */
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .tipo-via-table tr {
+    display: block; /* Hacer que las filas sean bloques */
+    margin-bottom: 1rem; /* Añadir espacio entre las filas */
   }
 }
 </style>

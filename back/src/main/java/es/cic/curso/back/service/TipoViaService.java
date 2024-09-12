@@ -28,6 +28,11 @@ public class TipoViaService {
                 .orElseThrow(() -> new ViaNotFoundException("Tipo de vía no encontrado con id: " + id));
     }
 
+    @Transactional(readOnly = true)
+    public TipoVia findByCodigo(String codigo) {
+        return tipoViaRepository.findByCodigo(codigo);
+    }
+
     public TipoVia save(TipoVia tipoVia) {
         return tipoViaRepository.save(tipoVia);
     }

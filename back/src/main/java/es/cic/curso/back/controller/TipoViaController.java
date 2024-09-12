@@ -32,6 +32,11 @@ public class TipoViaController {
         return tipoViaService.findById(id);
     }
 
+    @GetMapping("/codigo/{codigo}")
+    public TipoVia getTipoViaByCodigo(@PathVariable String codigo) {
+        return tipoViaService.findByCodigo(codigo);
+    }
+
     @PostMapping
     public TipoVia createTipoVia(@RequestBody TipoVia tipoVia) {
         return tipoViaService.save(tipoVia);

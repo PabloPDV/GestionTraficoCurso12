@@ -7,5 +7,5 @@ import es.cic.curso.back.model.TipoVia;
 
 @Repository
 public interface TipoViaRepository extends JpaRepository<TipoVia, Long> {
-
+    TipoVia findByCodigo(String codigo);
 }

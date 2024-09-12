@@ -10,8 +10,11 @@
               <input id="nombre" v-model="newVia.nombre" required />
             </div>
             <div class="form-group">
-              <label for="tipo-id">Tipo ID</label>
-              <input id="tipo-id" v-model="newVia.tipo.id" type="number" required />
+              <label for="tipo">Tipo</label>
+              <select id="tipo" v-model="newVia.tipo.id" required>
+                <option value="" disabled>Seleccione el Tipo</option>
+                <option v-for="tipo in tipos" :key="tipo.id" :value="tipo.id">{{ tipo.codigo }}</option>
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -30,15 +33,15 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="longitud">Longitud(m)</label>
-              <input id="longitud" v-model="newVia.longitud" type="number" required />
+              <label for="longitud">Longitud (m.)</label>
+              <input id="longitud" v-model="newVia.longitud" type="number" step="0.01" required />
             </div>
             <div class="form-group">
-              <label for="ancho">Ancho(m)</label>
-              <input id="ancho" v-model="newVia.ancho" type="number" required />
+              <label for="ancho">Ancho (m.)</label>
+              <input id="ancho" v-model="newVia.ancho" type="number" step="0.01" required />
             </div>
             <div class="form-group">
-              <label for="capacidad">Capacidad(veh/h)</label>
+              <label for="capacidad">Capacidad (veh/h)</label>
               <input id="capacidad" v-model="newVia.capacidad" type="number" required />
             </div>
           </div>
@@ -56,12 +59,10 @@
                 <th>Nombre</th>
                 <th>Estado</th>
                 <th>Congestión</th>
-                <th>Tipo ID</th>
-                <th>Longitud</th>
-                <th>Ancho</th>
-                <th>Capacidad</th>
-                <th>Creación</th>
-                <th>Modificación</th>
+                <th>Tipo</th>
+                <th>Longitud (m.)</th>
+                <th>Ancho (m.)</th>
+                <th>Capacidad (veh/h)</th>
                 <th class="actions-column">Acciones</th>
               </tr>
             </thead>
@@ -70,12 +71,10 @@
                 <td>{{ via.nombre }}</td>
                 <td>{{ via.estado }}</td>
                 <td>{{ via.congestion }}</td>
-                <td class="number-cell">{{ via.tipo.id }}</td>
-                <td class="number-cell">{{ via.longitud }}</td>
+                <td>{{ getTipoCodigo(via.tipo.id) }}</td>
+                <td class="number-cell">{{ via.longitud }} </td>
                 <td class="number-cell">{{ via.ancho }}</td>
                 <td class="number-cell">{{ via.capacidad }}</td>
-                <td>{{ via.creacion }}</td>
-                <td>{{ via.modificacion }}</td>
                 <td class="actions-column">
                   <button class="btn-edit" @click="editVia(via)">Editar</button>
                   <button class="btn-delete" @click="confirmDelete(via)">Eliminar</button>
@@ -86,7 +85,7 @@
         </div>
         <!-- Mensajes de éxito y error -->
         <div v-if="message" :class="['message', messageType]">
-          {{ message }}
+          {{ message }}: {{ messageItemName }}
         </div>
       </div>
     </div>
@@ -102,8 +101,11 @@
               <input id="edit-nombre" v-model="editingVia.nombre" required />
             </div>
             <div class="form-group">
-              <label for="edit-tipo-id">Tipo ID</label>
-              <input id="edit-tipo-id" v-model="editingVia.tipo.id" type="number" required />
+              <label for="edit-tipo">Tipo</label>
+              <select id="edit-tipo" v-model="editingVia.tipo.id" required>
+                <option value="" disabled>Seleccione el Tipo</option>
+                <option v-for="tipo in tipos" :key="tipo.id" :value="tipo.id">{{ tipo.codigo }}</option>
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -122,15 +124,15 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="edit-longitud">Longitud</label>
-              <input id="edit-longitud" v-model="editingVia.longitud" type="number" required />
+              <label for="edit-longitud">Longitud (m)</label>
+              <input id="edit-longitud" v-model="editingVia.longitud" type="number" step="0.01" required />
             </div>
             <div class="form-group">
-              <label for="edit-ancho">Ancho</label>
-              <input id="edit-ancho" v-model="editingVia.ancho" type="number" required />
+              <label for="edit-ancho">Ancho (m)</label>
+              <input id="edit-ancho" v-model="editingVia.ancho" type="number" step="0.01" required />
             </div>
             <div class="form-group">
-              <label for="edit-capacidad">Capacidad</label>
+              <label for="edit-capacidad">Capacidad (veh/h)</label>
               <input id="edit-capacidad" v-model="editingVia.capacidad" type="number" required />
             </div>
           </div>
@@ -159,8 +161,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const vias = ref([]);
+const tipos = ref([]);
 const newVia = ref({
   nombre: '',
   tipo: { id: null },
@@ -176,6 +180,7 @@ const deleteViaId = ref(null);
 const deleteViaName = ref('');
 const message = ref('');
 const messageType = ref('');
+const messageItemName = ref('');
 
 const fetchVias = async () => {
   try {
@@ -184,6 +189,16 @@ const fetchVias = async () => {
   } catch (error) {
     console.error('Error fetching vias:', error);
     showMessage('Error al obtener las vías', 'error');
+  }
+};
+
+const fetchTipos = async () => {
+  try {
+    const response = await axios.get('/api/tipovia');
+    tipos.value = response.data;
+  } catch (error) {
+    console.error('Error fetching tipos:', error);
+    showMessage('Error al obtener los tipos de vía', 'error');
   }
 };
 
@@ -196,11 +211,11 @@ const createVia = async () => {
   try {
     await axios.post('/api/vias', newVia.value);
     fetchVias();
+    showMessage('Vía creada exitosamente', 'success', newVia.value.nombre);
     clearForm();
-    showMessage('Vía creada exitosamente', 'success');
   } catch (error) {
     console.error('Error creating via:', error);
-    showMessage('Error al crear la vía', 'error');
+    showMessage('Error al crear la vía', 'error', newVia.value.nombre);
   }
 };
 
@@ -214,7 +229,6 @@ const clearForm = () => {
     ancho: null,
     capacidad: null
   };
-  fetchVias();
 };
 
 const editVia = (via) => {
@@ -230,11 +244,11 @@ const updateVia = async () => {
   try {
     await axios.put(`/api/vias/${editingVia.value.id}`, editingVia.value);
     fetchVias();
+    showMessage('Vía actualizada exitosamente', 'success', editingVia.value.nombre);
     editingVia.value = null;
-    showMessage('Vía actualizada exitosamente', 'success');
   } catch (error) {
     console.error('Error updating via:', error);
-    showMessage('Error al actualizar la vía', 'error');
+    showMessage('Error al actualizar la vía', 'error', editingVia.value.nombre);
   }
 };
 
@@ -249,12 +263,12 @@ const deleteVia = async (id) => {
     await axios.delete(`/api/vias/${id}`);
     fetchVias();
     showDeleteModal.value = false;
+    showMessage('Vía eliminada exitosamente', 'success', deleteViaName.value);
     deleteViaId.value = null;
     deleteViaName.value = '';
-    showMessage('Vía eliminada exitosamente', 'success');
   } catch (error) {
     console.error('Error deleting via:', error);
-    showMessage('Error al eliminar la vía', 'error');
+    showMessage('Error al eliminar la vía', 'error', deleteViaName.value);
   }
 };
 
@@ -262,7 +276,6 @@ const cancelDelete = () => {
   showDeleteModal.value = false;
   deleteViaId.value = null;
   deleteViaName.value = '';
-  fetchVias();
 };
 
 const cancelEdit = () => {
@@ -270,12 +283,14 @@ const cancelEdit = () => {
   fetchVias();
 };
 
-const showMessage = (msg, type) => {
+const showMessage = (msg, type, itemName = '') => {
   message.value = msg;
   messageType.value = type;
+  messageItemName.value = itemName;
   setTimeout(() => {
     message.value = '';
     messageType.value = '';
+    messageItemName.value = '';
   }, 3000);
 };
 
@@ -283,11 +298,34 @@ const validateVia = (via) => {
   return via.nombre && via.tipo.id !== null && via.estado && via.congestion && via.longitud !== null && via.ancho !== null && via.capacidad !== null;
 };
 
-onMounted(fetchVias);
+const formatDate = (dateString) => {
+  return format(new Date(dateString), 'dd/MM/yyyy HH:mm:ss');
+};
+
+const convertDecimal = (event, viaType, field) => {
+  const value = event.target.value.replace(',', '.');
+  if (viaType === 'newVia') {
+    newVia.value[field] = parseFloat(value);
+  } else if (viaType === 'editingVia') {
+    editingVia.value[field] = parseFloat(value);
+  }
+};
+
+const getTipoCodigo = (id) => {
+  const tipo = tipos.value.find(t => t.id === id);
+  return tipo ? tipo.codigo : '';
+};
+
+onMounted(() => {
+  fetchVias();
+  fetchTipos();
+});
 </script>
 
 <style scoped>
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   margin: 0;
 }
@@ -309,7 +347,7 @@ h1 {
 
 .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -334,6 +372,7 @@ h1 {
 
 .form-row {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -346,7 +385,8 @@ h1 {
 .form-group label {
   margin-bottom: 0.5rem;
   font-weight: bold;
-  font-size: 0.9rem; /* Reduce el tamaño de letra de las etiquetas */
+  font-size: 0.9rem;
+  /* Reduce el tamaño de letra de las etiquetas */
 }
 
 .form input,
@@ -356,7 +396,8 @@ h1 {
   padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 95%; /* Acorta levemente los campos del formulario */
+  width: 100%;
+  /* Ajustar el ancho al 100% */
 }
 
 .form input[type="number"] {
@@ -365,7 +406,8 @@ h1 {
 
 .form textarea {
   resize: vertical;
-  max-height: 150px; /* Limita el crecimiento del textarea */
+  max-height: 150px;
+  /* Limita el crecimiento del textarea */
 }
 
 .form button {
@@ -381,7 +423,8 @@ h1 {
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem; /* Asegura que los botones estén debajo de los campos */
+  margin-top: 1rem;
+  /* Asegura que los botones estén debajo de los campos */
 }
 
 .btn-crear {
@@ -409,9 +452,9 @@ h1 {
   overflow: hidden;
 }
 
-.via-table th, .via-table td {
+.via-table th,
+.via-table td {
   padding: 0.75rem;
-  text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
@@ -434,6 +477,8 @@ h1 {
 
 .via-table .actions-column {
   text-align: center;
+  white-space: nowrap;
+  /* Evitar salto de línea */
 }
 
 .via-table button {
@@ -442,11 +487,13 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-right: 0.5rem; /* Añade separación entre los botones */
+  margin-right: 0.5rem;
+  /* Añade separación entre los botones */
 }
 
 .via-table button:last-child {
-  margin-right: 0; /* Elimina el margen derecho del último botón */
+  margin-right: 0;
+  /* Elimina el margen derecho del último botón */
 }
 
 .via-table button:hover {
@@ -481,7 +528,8 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+  z-index: 10;
+  /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-edit {
@@ -494,7 +542,8 @@ h1 {
   display: flex;
   justify-content: left;
   align-items: center;
-  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+  z-index: 10;
+  /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-content {
@@ -512,7 +561,7 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   margin-left: 2%;
-  margin-bottom: 10%;
+  margin-bottom: 15%;
 }
 
 .modal-content-confirmacion {
@@ -566,6 +615,10 @@ h1 {
   color: #155724;
 }
 
+.number-cell {
+  text-align: right;
+}
+
 .message.error {
   background-color: #f8d7da;
   color: #721c24;
@@ -584,11 +637,16 @@ h1 {
     margin-left: 1rem;
   }
 
+  .form-row {
+    flex-direction: row;
+  }
+
   .form input,
   .form select,
   .form textarea,
   .form button {
-    width: 95%; /* Acorta levemente los campos del formulario */
+    width: 95%;
+    /* Acorta levemente los campos del formulario */
   }
 }
 
@@ -611,6 +669,48 @@ h1 {
 
   .content {
     gap: 0.5rem;
+  }
+
+  .table-container {
+    max-height: none;
+    /* Permitir que la tabla crezca en altura */
+    overflow-x: auto;
+    /* Habilitar el desplazamiento horizontal */
+  }
+
+  .via-table {
+    display: block;
+    /* Hacer que la tabla sea un bloque */
+    width: 100%;
+    /* Asegurar que la tabla ocupe todo el ancho */
+    overflow-x: auto;
+    /* Habilitar el desplazamiento horizontal */
+  }
+
+  .via-table th,
+  .via-table td {
+    display: block;
+    /* Hacer que las celdas sean bloques */
+    width: 100%;
+    /* Asegurar que las celdas ocupen todo el ancho */
+    box-sizing: border-box;
+    /* Incluir el padding y el borde en el ancho */
+  }
+
+  .via-table th {
+    position: relative;
+    /* Permitir que las celdas se posicionen correctamente */
+    top: auto;
+    /* Restablecer la posición superior */
+    z-index: auto;
+    /* Restablecer el índice z */
+  }
+
+  .via-table tr {
+    display: block;
+    /* Hacer que las filas sean bloques */
+    margin-bottom: 1rem;
+    /* Añadir espacio entre las filas */
   }
 }
 </style>
