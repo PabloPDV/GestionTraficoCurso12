@@ -47,7 +47,7 @@
           </div>
           <div class="form-actions">
             <button type="submit" class="btn-crear">Crear</button>
-            <button type="button"class="btn-limpiar" @click="clearForm">Limpiar</button>
+            <button type="button" class="btn-limpiar" @click="clearForm">Limpiar</button>
           </div>
         </form>
       </div>
@@ -137,8 +137,8 @@
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit">Actualizar</button>
-            <button type="button" @click="cancelEdit">Cancelar</button>
+            <button type="submit" class="btn-crear">Actualizar</button>
+            <button type="button" class="btn-limpiar" @click="cancelEdit">Cancelar</button>
           </div>
         </form>
       </div>
@@ -397,7 +397,6 @@ h1 {
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;
-  /* Ajustar el ancho al 100% */
 }
 
 .form input[type="number"] {
@@ -411,7 +410,6 @@ h1 {
 }
 
 .form button {
-  color: white;
   cursor: pointer;
 }
 

@@ -85,8 +85,8 @@
             <textarea id="edit-descripcion" v-model="editingTipoVia.descripcion" required></textarea>
           </div>
           <div class="form-actions">
-            <button type="submit">Actualizar</button>
-            <button type="button" @click="cancelEdit">Cancelar</button>
+            <button type="submit" class="btn-crear">Actualizar</button>
+            <button type="button" class="btn-limpiar" @click="cancelEdit">Cancelar</button>
           </div>
         </form>
       </div>
@@ -243,7 +243,9 @@ onMounted(fetchTipoVias);
 </script>
 
 <style scoped>
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   margin: 0;
 }
@@ -321,7 +323,8 @@ h1 {
 
 .form textarea {
   resize: vertical;
-  max-height: 150px; /* Limita el crecimiento del textarea */
+  max-height: 150px;
+  /* Limita el crecimiento del textarea */
 }
 
 .form button {
@@ -332,7 +335,8 @@ h1 {
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem; /* Asegura que los botones estén debajo de los campos */
+  margin-top: 1rem;
+  /* Asegura que los botones estén debajo de los campos */
 }
 
 .btn-crear {
@@ -369,7 +373,8 @@ h1 {
   overflow: hidden;
 }
 
-.tipo-via-table th, .tipo-via-table td {
+.tipo-via-table th,
+.tipo-via-table td {
   padding: 0.75rem;
   text-align: left;
   border-bottom: 1px solid #ddd;
@@ -394,7 +399,8 @@ h1 {
 
 .tipo-via-table .actions-column {
   text-align: center;
-  white-space: nowrap; /* Evitar salto de línea */
+  white-space: nowrap;
+  /* Evitar salto de línea */
 }
 
 .tipo-via-table button {
@@ -403,11 +409,13 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-right: 0.5rem; /* Añade separación entre los botones */
+  margin-right: 0.5rem;
+  /* Añade separación entre los botones */
 }
 
 .tipo-via-table button:last-child {
-  margin-right: 0; /* Elimina el margen derecho del último botón */
+  margin-right: 0;
+  /* Elimina el margen derecho del último botón */
 }
 
 .tipo-via-table button:hover {
@@ -442,7 +450,8 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+  z-index: 10;
+  /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-edit {
@@ -455,7 +464,8 @@ h1 {
   display: flex;
   justify-content: left;
   align-items: center;
-  z-index: 10; /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
+  z-index: 10;
+  /* Asegura que los modales tengan prioridad sobre la cabecera de la tabla */
 }
 
 .modal-content {
@@ -553,7 +563,8 @@ h1 {
   .form select,
   .form textarea,
   .form button {
-    width: 95%; /* Acorta levemente los campos del formulario */
+    width: 95%;
+    /* Acorta levemente los campos del formulario */
   }
 }
 
@@ -579,38 +590,53 @@ h1 {
   }
 
   .table-container {
-    max-height: none; /* Permitir que la tabla crezca en altura */
-    overflow-x: auto; /* Habilitar el desplazamiento horizontal */
+    max-height: none;
+    /* Permitir que la tabla crezca en altura */
+    overflow-x: auto;
+    /* Habilitar el desplazamiento horizontal */
   }
 
   .tipo-via-table {
-    display: block; /* Hacer que la tabla sea un bloque */
-    width: 100%; /* Asegurar que la tabla ocupe todo el ancho */
-    overflow-x: auto; /* Habilitar el desplazamiento horizontal */
+    display: block;
+    /* Hacer que la tabla sea un bloque */
+    width: 100%;
+    /* Asegurar que la tabla ocupe todo el ancho */
+    overflow-x: auto;
+    /* Habilitar el desplazamiento horizontal */
   }
 
-  .tipo-via-table th, .tipo-via-table td {
-    display: block; /* Hacer que las celdas sean bloques */
-    width: 100%; /* Asegurar que las celdas ocupen todo el ancho */
-    box-sizing: border-box; /* Incluir el padding y el borde en el ancho */
+  .tipo-via-table th,
+  .tipo-via-table td {
+    display: block;
+    /* Hacer que las celdas sean bloques */
+    width: 100%;
+    /* Asegurar que las celdas ocupen todo el ancho */
+    box-sizing: border-box;
+    /* Incluir el padding y el borde en el ancho */
   }
 
   .tipo-via-table th {
-    position: relative; /* Permitir que las celdas se posicionen correctamente */
-    top: auto; /* Restablecer la posición superior */
-    z-index: auto; /* Restablecer el índice z */
+    position: relative;
+    /* Permitir que las celdas se posicionen correctamente */
+    top: auto;
+    /* Restablecer la posición superior */
+    z-index: auto;
+    /* Restablecer el índice z */
   }
 
   .tipo-via-table td::before {
-    content: attr(data-label); /* Usar el atributo data-label para mostrar la cabecera */
+    content: attr(data-label);
+    /* Usar el atributo data-label para mostrar la cabecera */
     font-weight: bold;
     display: block;
     margin-bottom: 0.5rem;
   }
 
   .tipo-via-table tr {
-    display: block; /* Hacer que las filas sean bloques */
-    margin-bottom: 1rem; /* Añadir espacio entre las filas */
+    display: block;
+    /* Hacer que las filas sean bloques */
+    margin-bottom: 1rem;
+    /* Añadir espacio entre las filas */
   }
 }
 </style>
