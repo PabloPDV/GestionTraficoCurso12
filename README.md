@@ -25,5 +25,4 @@ Importante
 Que no deje eliminar un tipo de vía si tiene una vía asignada: Hecho.
 Tests Cypress
 Faltan
-Números tabla a la derecha: Falta.
-En vías dar más espacio a nombre y menos a estado: Falta.
+Unidades en la tabla
